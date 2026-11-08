@@ -391,6 +391,7 @@ body{background:radial-gradient(ellipse at 50% 0,#14307a 0,#081448 45%,#040a1e 1
 <div class="ov" id="du"><div class="card dcard"><div class="duw"><div class="dus" id="du1"></div><div class="dus" id="du2"></div></div><div id="dur"></div></div></div>
 <div class="ov" id="cp"><div class="card" style="text-align:center"><h2 id="cpt"></h2><div class="cpl" id="cpl"></div><div id="cpd">Toque em uma carta para ver o poder dela.</div><button class="btn by" id="cpb" disabled onclick="cpOk()">Confirmar escolha</button></div></div>
 <div class="ov" id="win"><div class="wconf" id="wconf"></div><div class="card wcard" id="wc"></div></div>
+<script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.78.0/dist/umd/supabase.min.js"></script>
 
 <style id="plimg">
@@ -937,7 +938,7 @@ const r=await sb.auth.signInAnonymously({options:{data:{name:n}}});
 if(r.error)return renderOn(/anonymous/i.test(r.error.message||'')?'Ative "Allow anonymous sign-ins" no Supabase (Authentication > Sign In / Providers).':r.error.message);
 UID=r.data.user.id;UN=n;EDIT=false;renderOn()}catch(e){renderOn('Sem conexão com o servidor')}}
 function renderOn(msg){const b=$('#onb'),er=msg?`<p style="color:#ff8a8a">${msg}</p>`:'';
-if(!sb){b.innerHTML='<p>O jogo online ainda não foi configurado. Preencha o arquivo <b>config.js</b> com a URL e a chave do seu projeto Supabase.</p>';return}
+if(!sb){b.innerHTML='<p>'+(!window.SUPABASE_URL?'Não encontrei o arquivo <b>config.js</b> junto do jogo. Envie ele para o GitHub, na mesma pasta do index.html.':/SEU-PROJETO/.test(window.SUPABASE_URL)?'O <b>config.js</b> ainda está com os valores de exemplo. Preencha com a URL e a chave do seu Supabase.':!window.supabase?'Não consegui carregar a biblioteca do Supabase. Verifique a internet ou desligue o bloqueador de anúncios.':'Não consegui conectar ao Supabase. Confira a URL e a chave no config.js.')+'</p>';return}
 if(!UID||EDIT){b.innerHTML=er+`<p>Digite seu nome para jogar com os amigos. Não precisa de conta nem senha.</p><input id="un" placeholder="Seu nome" maxlength="16" value="${UN||''}" autocomplete="off"><button class="btn by" onclick="enterName()">Continuar</button>`;return}
 if(!G){b.innerHTML=er+`<p>Olá, <b>${UN}</b>!</p><p>Criar sala com as opções do menu (${N} jogadores, ${TURBO?'Turbo':'Clássico'}):</p><button class="btn bb" onclick="createRoom()">Criar sala</button><p>Ou entre com o código de um amigo:</p><input id="cd" maxlength="5" autocomplete="off"><button class="btn bg" onclick="joinRoom(document.getElementById('cd').value)">Entrar na sala</button><button class="btn sm bp" onclick="EDIT=true;renderOn()">Trocar nome</button>`;return}
 b.innerHTML=er+`<p>Código da sala:</p><div class="code">${G.code}</div><p>Mande o código aos amigos. Jogadores (${G.seats.filter(Boolean).length}/${G.n}):</p>`+G.seats.map((s,k)=>{const p=ACT[G.n][k];return `<div class="chip" style="--c:${COL[p]};margin:4px auto;width:max-content"><span class="dot"></span>${s?s.name+(k===G.k?' (você)':''):'aguardando...'}</div>`}).join('')+'<p class="hint">A partida começa quando todos entrarem.</p><button class="btn sm bp" onclick="leave();renderOn()">Sair da sala</button>'}
